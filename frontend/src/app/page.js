@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { auth } from "@/auth";
+import { goFetch } from "@/lib/api";
 
-const API = "http://localhost:8080";
+
 const TZ = "Asia/Kolkata";
 
 const money = (v) =>
@@ -12,15 +13,9 @@ const money = (v) =>
 
 const dayKey = (d) => new Date(d).toLocaleDateString("en-CA", { timeZone: TZ });
 
-async function getTransactions() {
-  try {
-    const res = await fetch(`${API}/api/transactions`, { cache: "no-store" });
-    if (!res.ok) return null;
-    return await res.json();
-  } catch {
-    return null;
+  async function getTransactions() {
+    return goFetch("/api/transactions");
   }
-}
 
 export default async function Home() {
   const [transactions, session] = await Promise.all([
@@ -66,7 +61,7 @@ export default async function Home() {
   );
   const sum = (list, type) =>
     list
-      .filter((t) => t.type === type)
+      .filter((t) => t.diresction === type)
       .reduce((total, t) => total + Number(t.amount), 0);
 
   // Last 7 days
